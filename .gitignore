@@ -1,0 +1,3 @@
+# Project exclude paths
+/code/.gradle/
+/code/build/
