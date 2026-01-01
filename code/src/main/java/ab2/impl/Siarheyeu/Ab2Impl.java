@@ -53,87 +53,165 @@ public class Ab2Impl implements Ab2 {
         }
 
         //save last 3 digits of matriculation number
-        char X = matNum.charAt(matNum.length() - 3);
-        char Y = matNum.charAt(matNum.length() - 2);
-        char Z = matNum.charAt(matNum.length() - 1);
+        Character X = matNum.charAt(matNum.length() - 1);
+        Character Y = matNum.charAt(matNum.length() - 2);
+        Character Z = matNum.charAt(matNum.length() - 3);
+
+        //mark the read characters
+        Character A = 'A'; //for X
+        Character B = 'B'; //for Y
+        Character C = 'C'; //for Z
 
         List<Transition> transitions = new ArrayList<>();
 
-        //from start to first X
-        transitions.add(
-                new Transition(0,
-                        new Character[]{X},
-                        2 ,
-                        new Character[]{'A'},
-                        new TuringMachine.Movement[]{TuringMachine.Movement.Right}));
+        transitions.add(new Transition(
+                0, new Character[]{ X },
+                2, new Character[]{ A },
+                new TuringMachine.Movement[]{ TuringMachine.Movement.Right }
+        ));
 
-        transitions.add(
-                new Transition(
-                        2,
-                        new Character[]{ 'A' },
-                        2,
-                        new Character[]{ 'A' },
-                        new TuringMachine.Movement[]{ TuringMachine.Movement.Right }
-                )
-        );
+        transitions.add(new Transition(
+                0, new Character[]{ A },
+                0, new Character[]{ A },
+                new TuringMachine.Movement[]{ TuringMachine.Movement.Right }
+        ));
 
-        //to Y
-        transitions.add(
-                new Transition(
-                        2,
-                        new Character[]{ Y },
-                        3,
-                        new Character[]{ 'B' },
-                        new TuringMachine.Movement[]{ TuringMachine.Movement.Right }
-                )
-        );
-        transitions.add(
-                new Transition(
-                        3,
-                        new Character[]{ 'B' },
-                        3,
-                        new Character[]{ 'B' },
-                        new TuringMachine.Movement[]{ TuringMachine.Movement.Right }
-                )
-        );
-
-        //to Z
-        transitions.add(
-                new Transition(
-                        3,
-                        new Character[]{ Z },
-                        4,
-                        new Character[]{ 'C' },
-                        new TuringMachine.Movement[]{ TuringMachine.Movement.Right }
-                )
-        );
-        transitions.add(
-                new Transition(
-                        4,
-                        new Character[]{ 'C' },
-                        4,
-                        new Character[]{ 'C' },
-                        new TuringMachine.Movement[]{ TuringMachine.Movement.Right }
-                )
-        );
-        //end of line
-        transitions.add(
-                new Transition(
-                        4,
-                        new Character[]{ null },
-                        0,
-                        new Character[]{ null },
-                        new TuringMachine.Movement[]{ TuringMachine.Movement.Right }
-                )
-        );
+        transitions.add(new Transition(
+                0, new Character[]{ null },
+                5, new Character[]{ null },
+                new TuringMachine.Movement[]{ TuringMachine.Movement.Stay }
+        ));
 
 
+        transitions.add(new Transition(
+                2, new Character[]{ X },
+                2, new Character[]{ X },
+                new TuringMachine.Movement[]{ TuringMachine.Movement.Right }
+        ));
+        transitions.add(new Transition(
+                2, new Character[]{ A },
+                2, new Character[]{ A },
+                new TuringMachine.Movement[]{ TuringMachine.Movement.Right }
+        ));
+        transitions.add(new Transition(
+                2, new Character[]{ B },
+                2, new Character[]{ B },
+                new TuringMachine.Movement[]{ TuringMachine.Movement.Right }
+        ));
+        transitions.add(new Transition(
+                2, new Character[]{ C },
+                2, new Character[]{ C },
+                new TuringMachine.Movement[]{ TuringMachine.Movement.Right }
+        ));
+        //  mark Y and search Z
+        transitions.add(new Transition(
+                2, new Character[]{ Y },
+                3, new Character[]{ B },
+                new TuringMachine.Movement[]{ TuringMachine.Movement.Right }
+        ));
+
+        //skip
+        transitions.add(new Transition(
+                3, new Character[]{ Y },
+                3, new Character[]{ Y },
+                new TuringMachine.Movement[]{ TuringMachine.Movement.Right }
+        ));
+        transitions.add(new Transition(
+                3, new Character[]{ A },
+                3, new Character[]{ A },
+                new TuringMachine.Movement[]{ TuringMachine.Movement.Right }
+        ));
+        transitions.add(new Transition(
+                3, new Character[]{ B },
+                3, new Character[]{ B },
+                new TuringMachine.Movement[]{ TuringMachine.Movement.Right }
+        ));
+        transitions.add(new Transition(
+                3, new Character[]{ C },
+                3, new Character[]{ C },
+                new TuringMachine.Movement[]{ TuringMachine.Movement.Right }
+        ));
+        //mark and go left if Z
+        transitions.add(new Transition(
+                3, new Character[]{ Z },
+                4, new Character[]{ C },
+                new TuringMachine.Movement[]{ TuringMachine.Movement.Left }
+        ));
+
+        transitions.add(new Transition(
+                4, new Character[]{ X },
+                4, new Character[]{ X },
+                new TuringMachine.Movement[]{ TuringMachine.Movement.Left }
+        ));
+        transitions.add(new Transition(
+                4, new Character[]{ Y },
+                4, new Character[]{ Y },
+                new TuringMachine.Movement[]{ TuringMachine.Movement.Left }
+        ));
+        transitions.add(new Transition(
+                4, new Character[]{ Z },
+                4, new Character[]{ Z },
+                new TuringMachine.Movement[]{ TuringMachine.Movement.Left }
+        ));
+        transitions.add(new Transition(
+                4, new Character[]{ A },
+                4, new Character[]{ A },
+                new TuringMachine.Movement[]{ TuringMachine.Movement.Left }
+        ));
+        transitions.add(new Transition(
+                4, new Character[]{ B },
+                4, new Character[]{ B },
+                new TuringMachine.Movement[]{ TuringMachine.Movement.Left }
+        ));
+        transitions.add(new Transition(
+                4, new Character[]{ C },
+                4, new Character[]{ C },
+                new TuringMachine.Movement[]{ TuringMachine.Movement.Left }
+        ));
+
+        transitions.add(new Transition(
+                4, new Character[]{ null },
+                0, new Character[]{ null },
+                new TuringMachine.Movement[]{ TuringMachine.Movement.Right }
+        ));
+
+        transitions.add(new Transition(
+                0, new Character[]{B},
+                5, new Character[]{B},
+                new TuringMachine.Movement[]{TuringMachine.Movement.Stay}
+        ));
+        transitions.add(new Transition(
+                0, new Character[]{C},
+                5, new Character[]{C},
+                new TuringMachine.Movement[]{TuringMachine.Movement.Stay}
+        ));
 
 
 
 
+        transitions.add(new Transition(
+                5, new Character[]{ A },
+                5, new Character[]{ A },
+                new TuringMachine.Movement[]{ TuringMachine.Movement.Right }
+        ));
+        transitions.add(new Transition(
+                5, new Character[]{ B },
+                5, new Character[]{ B },
+                new TuringMachine.Movement[]{ TuringMachine.Movement.Right }
+        ));
+        transitions.add(new Transition(
+                5, new Character[]{ C },
+                5, new Character[]{ C },
+                new TuringMachine.Movement[]{ TuringMachine.Movement.Right }
+        ));
 
-        return null;
+        //accept
+        transitions.add(new Transition(
+                5, new Character[]{ null },
+                1, new Character[]{ null },
+                new TuringMachine.Movement[]{ TuringMachine.Movement.Stay }
+        ));
+        return transitions.toArray(new Transition[0]);
     }
 
     @Override
