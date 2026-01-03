@@ -216,7 +216,125 @@ public class Ab2Impl implements Ab2 {
 
     @Override
     public Transition[] hasPath() {
-        // TODO Auto-generated method stub
-        return null;
+
+
+        List<Transition> transition = new ArrayList<>();
+
+        //position
+        for(int i = 0; i < 16; i++){ // 16-bits
+            //flags
+            for(int j = 0; j < 16; j ++){
+                int state = i*16 + j;
+
+                //es sind nur 4 boolean benötigt
+                boolean transfer12 = (j & 1) != 0;  // 1-2 getroffen
+                boolean transfer13 = (j & 2) != 0; //1-3 getroffen
+                boolean transfer12and23 = (j & 4) != 0; // 1-2 und 2 -3
+                boolean transfer13and24 = (j & 8) != 0; // 1-3 und 2-4
+
+                char[] values = {'0', '1'};
+                for (int k = 0; k < values.length; k++) {
+                    char ch = values[k];
+
+                    int newFlags = j;
+
+
+                    //1 to 2
+                    if (i == 1 && ch == '1') newFlags |= 1;
+
+                    // 1 to 3
+                    if (i == 2 && ch == '1') newFlags |= 2;
+
+                    // 1to 4 - wird akzepziert
+                    if (i == 3 && ch == '1') {
+                        transition.add(new Transition(
+                                state,
+                                new Character[]{Character.valueOf(ch), null},
+                                1,
+                                new Character[]{Character.valueOf(ch), null},
+                                new TuringMachine.Movement[]{
+                                        TuringMachine.Movement.Stay,
+                                        TuringMachine.Movement.Stay
+                                }
+                        ));
+                        continue;
+                    }
+
+                    // 2 to 3 (1-2 and 2-3 if it was 1-2)
+                    if (i == 6 && ch == '1' && transfer12) newFlags |= 4;
+
+                    // 2-4 wenn es 1-2 existiert dann wirds akzeptiert
+                    if (i == 7 && ch == '1' && transfer12) {
+                        transition.add(new Transition(
+                                state,
+                                new Character[]{Character.valueOf(ch), null},
+                                1,
+                                new Character[]{Character.valueOf(ch), null},
+                                new TuringMachine.Movement[]{
+                                        TuringMachine.Movement.Stay,
+                                        TuringMachine.Movement.Stay
+                                }
+                        ));
+                        continue;
+                    }
+                    // wenns 1-3 gab dann 1-3und 2-4  1-3-2-4
+                    if (i == 7 && ch == '1' && transfer13) newFlags |= 8;
+
+
+                    // wenn es 1-3 & 2-4 und der Weg 3-2=1 dann Pfad 1-3-2-4 wird akzeptiert
+                    if (i == 9 && ch == '1' && transfer13and24) {
+                        transition.add(new Transition(
+                                state,
+                                new Character[]{Character.valueOf(ch), null},
+                                1,
+                                new Character[]{Character.valueOf(ch), null},
+                                new TuringMachine.Movement[]{
+                                        TuringMachine.Movement.Stay,
+                                        TuringMachine.Movement.Stay
+                                }
+                        ));
+                        continue;
+                    }
+
+
+                    // wenn 1-3 => dann 1-3 -4
+                    // wenn 1-2 und 2-3 => dann 1-2-3-4
+                    if (i == 11 && ch == '1' && (transfer13 || transfer12and23)) {
+                        transition.add(new Transition(
+                                state,
+                                new Character[]{Character.valueOf(ch), null},
+                                1,
+                                new Character[]{Character.valueOf(ch), null},
+                                new TuringMachine.Movement[]{
+                                        TuringMachine.Movement.Stay,
+                                        TuringMachine.Movement.Stay
+                                }
+                        ));
+                        continue;
+                    }
+
+                    //nächster Schritt
+                    int nextState = (i + 1) * 16 + newFlags;
+                    transition.add(new Transition(
+                            state,
+                            new Character[]{Character.valueOf(ch), null},
+                            nextState,
+                            new Character[]{Character.valueOf(ch), null},
+                            new TuringMachine.Movement[]{
+                                    TuringMachine.Movement.Right,
+                                    TuringMachine.Movement.Stay
+                            }
+                    ));
+
+
+                }
+
+            }
+
+
+        }
+
+
+        return transition.toArray(new Transition[0]);
     }
 }
