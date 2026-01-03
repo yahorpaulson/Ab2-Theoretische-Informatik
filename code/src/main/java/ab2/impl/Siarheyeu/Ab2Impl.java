@@ -37,9 +37,242 @@ public class Ab2Impl implements Ab2 {
 
     @Override
     public Transition[] larger() {
-        // TODO Auto-generated method stub
-        return null;
+        List<Transition> transitions = new ArrayList<>();
+
+
+
+        //Zustände
+        int SPACE = 0; //lesen den Band bis Leerzeichen
+        int ACCEPT = 1;
+        int COPY = 2; //num2 wird auf die zweite Band kopiert
+        int RETURN = 3; //wird nach links bis null geschoben
+        int LEN = 4;
+        int BACKTOCOMPARE= 5;
+        int COMPARE = 6;
+
+        char[] values = {'0', '1'};
+        for (int i = 0; i < values.length; i++) {
+            char c = values[i];
+
+            //wenn 0 oder 1 schieben den Lesekopf nach rechts
+            transitions.add(new Transition(
+                    SPACE,
+                    new Character[]{c, null},
+                    SPACE,
+                    new Character[]{c, null},
+                    new TuringMachine.Movement[]{TuringMachine.Movement.Right, TuringMachine.Movement.Stay}
+            ));
+        }
+
+            // wenn Leerzeichen vorkommt num2 kopieren
+        transitions.add(new Transition(
+                SPACE,
+                new Character[]{' ', null},
+                COPY,
+                new Character[]{' ', null},
+                new TuringMachine.Movement[]{TuringMachine.Movement.Right, TuringMachine.Movement.Stay}
+        ));
+
+        //wenn null kommt wirds nach links geschoben
+        transitions.add(new Transition(
+                COPY,
+                new Character[]{null, null},
+                RETURN,
+                new Character[]{null, null},
+                new TuringMachine.Movement[]{TuringMachine.Movement.Left, TuringMachine.Movement.Left}
+
+        ));
+
+
+        //kopieren num2
+        for (int i = 0; i < values.length; i++) {
+            char c = values[i];
+
+            transitions.add(new Transition(
+                    COPY,
+                    new Character[]{c, null},
+                    COPY,
+                    new Character[]{c, c},
+                    new TuringMachine.Movement[]{TuringMachine.Movement.Right, TuringMachine.Movement.Right}
+            ));
+
+
+        }
+
+
+        //beide Köpfe zurücksetzen (bis null)
+        char[] tape1Values = {'0', '1', ' '};
+        char[] tape2Values = {'0', '1'};
+
+        for (int i = 0; i < tape1Values.length; i++) {
+            char c1 = tape1Values[i];
+
+            for (int j = 0; j < tape2Values.length; j++) {
+                char c2 = tape2Values[j];
+
+                transitions.add(new Transition(
+                        RETURN,
+                        new Character[]{c1, c2},
+                        RETURN,
+                        new Character[]{c1, c2},
+                        new TuringMachine.Movement[]{
+                                TuringMachine.Movement.Left,
+                                TuringMachine.Movement.Left
+                        }
+                ));
+            }
+        }
+
+        transitions.add(new Transition(
+                RETURN,
+                new Character[]{null, null},
+                LEN,
+                new Character[]{null, null},
+                new TuringMachine.Movement[]{
+                        TuringMachine.Movement.Right,
+                        TuringMachine.Movement.Right
+                }
+        ));
+
+
+        for (char c1 : tape1Values) {
+            for (char c2 : tape2Values) {
+                transitions.add(new Transition(
+                        BACKTOCOMPARE,
+                        new Character[]{c1, c2},
+                        BACKTOCOMPARE,
+                        new Character[]{c1, c2},
+                        new TuringMachine.Movement[]{TuringMachine.Movement.Left, TuringMachine.Movement.Left}
+                ));
+            }
+        }
+
+        //band 1 ist nicht null, band 2 ist null, dann wird sich nur band1 bewegt
+        for(int i = 0; i < tape1Values.length; i++){
+            char c = tape1Values[i];
+            transitions.add(new Transition(
+                    RETURN,
+                    new Character[]{c, null},
+                    RETURN,
+                    new Character[]{c, null},
+                    new TuringMachine.Movement[]{TuringMachine.Movement.Left, TuringMachine.Movement.Stay}
+            ));
+        }
+
+        //band 1 ist null, band 2 nicht
+        for(int i = 0; i < tape2Values.length; i++){
+            char c = tape2Values[i];
+            transitions.add(new Transition(
+                    RETURN,
+                    new Character[]{null, c},
+                    RETURN,
+                    new Character[]{null, c},
+                    new TuringMachine.Movement[]{TuringMachine.Movement.Stay, TuringMachine.Movement.Left}
+            ));
+        }
+        //band 1 wird geschwoben
+        for (char c : tape1Values) {
+            transitions.add(new Transition(
+                    BACKTOCOMPARE,
+                    new Character[]{c, null},
+                    BACKTOCOMPARE,
+                    new Character[]{c, null},
+                    new TuringMachine.Movement[]{
+                            TuringMachine.Movement.Left,
+                            TuringMachine.Movement.Stay
+                    }
+            ));
+        }
+
+        //band 2 wird geschwoben
+        for (char c : tape2Values) {
+            transitions.add(new Transition(
+                    BACKTOCOMPARE,
+                    new Character[]{null, c},
+                    BACKTOCOMPARE,
+                    new Character[]{null, c},
+                    new TuringMachine.Movement[]{
+                            TuringMachine.Movement.Stay,
+                            TuringMachine.Movement.Left
+                    }
+            ));
+        }
+
+
+
+        //beide sind auf null geschoben
+        transitions.add(new Transition(
+                BACKTOCOMPARE,
+                new Character[]{null, null},
+                COMPARE,
+                new Character[]{null, null},
+                new TuringMachine.Movement[]{TuringMachine.Movement.Right, TuringMachine.Movement.Right}
+        ));
+
+        for (char a : new char[]{'0','1'}) {
+            for (char b : new char[]{'0','1'}) {
+                transitions.add(new Transition(
+                        LEN,
+                        new Character[]{a, b},
+                        LEN,
+                        new Character[]{a, b},
+                        new TuringMachine.Movement[]{TuringMachine.Movement.Right, TuringMachine.Movement.Right}
+                ));
+            }
+        }
+        for (char a : new char[]{'0','1'}) {
+            transitions.add(new Transition(
+                    LEN,
+                    new Character[]{a, null},
+                    ACCEPT,
+                    new Character[]{a, null},
+                    new TuringMachine.Movement[]{TuringMachine.Movement.Stay, TuringMachine.Movement.Stay}
+            ));
+        }
+
+        //gleiche bits dann gehts weiter
+        for (int i = 0; i < values.length; i++) {
+            char c = values[i];
+            transitions.add(new Transition(
+                    COMPARE,
+                    new Character[]{c,c},
+                    COMPARE,
+                    new Character[]{c,c},
+                    new TuringMachine.Movement[]{TuringMachine.Movement.Right, TuringMachine.Movement.Right}
+
+            ));
+        }
+
+
+
+
+        transitions.add(
+                new Transition(
+                        COMPARE,
+                        new Character[]{'1', '0'},
+                        ACCEPT,
+                        new Character[]{'1', '0'},
+                        new TuringMachine.Movement[]{
+                                TuringMachine.Movement.Stay, TuringMachine.Movement.Stay
+                        }
+                )
+        );
+
+
+        transitions.add(new Transition(
+                LEN,
+                new Character[]{' ', null},
+                BACKTOCOMPARE,
+                new Character[]{' ', null},
+                new TuringMachine.Movement[]{TuringMachine.Movement.Left, TuringMachine.Movement.Left}
+        ));
+
+
+
+        return transitions.toArray(new Transition[0]);
+
     }
+
 
     @Override
     public Transition[] lastThree() {
