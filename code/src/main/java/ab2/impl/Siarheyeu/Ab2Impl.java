@@ -275,10 +275,9 @@ public class Ab2Impl implements Ab2 {
     //separate Methode um nicht determinismus zu verhindern
     private void addUniqueTransition(List<Transition> transitions, Transition transition){
         for (Transition trs : transitions){
-            if (trs.fromState == transition.fromState){
-                if(sameChar(trs.read, transition.read)){
-                    return;
-                }
+            if ((trs.fromState == transition.fromState) &&
+            (sameChar(trs.read, transition.read))){
+                return;
             }
         }
         transitions.add(transition);
