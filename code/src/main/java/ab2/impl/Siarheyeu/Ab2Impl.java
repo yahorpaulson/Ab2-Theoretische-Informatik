@@ -272,6 +272,32 @@ public class Ab2Impl implements Ab2 {
         return transitions.toArray(new Transition[0]);
 
     }
+    //separate Methode um nicht determinismus zu verhindern
+    private void addUniqueTransition(List<Transition> transitions, Transition transition){
+        for (Transition trs : transitions){
+            if (trs.fromState == transition.fromState){
+                if(sameChar(trs.read, transition.read)){
+                    return;
+                }
+            }
+        }
+        transitions.add(transition);
+    }
+
+    private boolean sameChar(Character [] first, Character [] second){
+        if(first==second){
+            return true;
+        }
+        if (first == null || second == null) return false;
+        if (first.length != second.length) return false;
+
+        for(int i = 0; i < first.length; i++){
+            if (first[i] == null && second[i] == null) continue;
+            if (first[i] == null || second[i] == null) return false;
+            if (!first[i].equals(second[i])) return false;
+        }
+        return true;
+    }
 
 
     @Override
